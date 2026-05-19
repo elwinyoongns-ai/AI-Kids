@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}新增报名{% endblock %}
+{% block page_title %}新增报名{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h4>新增报名</h4>
+  <a href="{{ url_for('enrollments_list') }}" class="btn btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i>返回</a>
+</div>
+<div class="row"><div class="col-lg-6">
+<div class="stat-card">
+<form method="post">
+  <div class="mb-3">
+    <label class="form-label fw-semibold">学生 *</label>
+    <select name="student_id" class="form-select" required>
+      <option value="">选择学生...</option>
+      {% for s in students %}
+      <option value="{{ s.id }}">{{ s.name }}{% if s.age %} (年龄{{ s.age }}岁){% endif %}{% if s.parent %} · 家长:{{ s.parent.name }}{% endif %}</option>
+      {% endfor %}
+    </select>
+    <div class="form-text">如学生未登记，请先<a href="{{ url_for('student_add') }}">添加学生</a></div>
+  </div>
+  <div class="mb-3">
+    <label class="form-label fw-semibold">报名课程 *</label>
+    <select name="course_id" class="form-select" required>
+      <option value="">选择课程...</option>
+      {% for c in courses %}
+      <option value="{{ c.id }}">Point {{ c.center.code }} · {{ c.name }}{% if c.fee %} (RM{{ "%.0f"|format(c.fee) }}/月){% endif %}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="mb-3">
+    <label class="form-label fw-semibold">开始日期</label>
+    <input type="date" name="start_date" class="form-control" value="{{ today }}"></div>
+  <div class="mb-3"><label class="form-label fw-semibold">备注</label><textarea name="notes" class="form-control" rows="2"></textarea></div>
+  <div class="d-flex gap-2">
+    <button type="submit" class="btn btn-primary">确认报名</button>
+    <a href="{{ url_for('enrollments_list') }}" class="btn btn-outline-secondary">取消</a>
+  </div>
+</form>
+</div></div></div>
+{% endblock %}
+{% block extra_js %}<script>document.querySelector('[name=start_date]').value=new Date().toISOString().split('T')[0];</script>{% endblock %}

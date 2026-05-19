@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}添加课程{% endblock %}
+{% block page_title %}添加课程{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h4>添加课程</h4>
+  <a href="{{ url_for('courses_list') }}" class="btn btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i>返回</a>
+</div>
+<div class="row"><div class="col-lg-6">
+<div class="stat-card">
+<form method="post">
+  <div class="mb-3"><label class="form-label fw-semibold">课程名称 *</label><input type="text" name="name" class="form-control" required autofocus></div>
+  <div class="mb-3">
+    <label class="form-label fw-semibold">功能中心 *</label>
+    <select name="center_id" class="form-select" required>
+      <option value="">选择中心...</option>
+      {% for c in centers %}
+      <option value="{{ c.id }}">Point {{ c.code }}: {{ c.name }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="mb-3"><label class="form-label fw-semibold">适庄年龄</label><input type="text" name="age_group" class="form-control" placeholder="如：2-6岁"></div>
+  <div class="row mb-3">
+    <div class="col">
+      <label class="form-label fw-semibold">月课时费 (RM)</label>
+      <input type="number" name="fee" class="form-control" step="0.01" min="0" value="0">
+    </div>
+    <div class="col">
+      <label class="form-label fw-semibold">周课次数</label>
+      <input type="number" name="sessions_per_week" class="form-control" min="1" value="1">
+    </div>
+    <div class="col">
+      <label class="form-label fw-semibold">周期(周)</label>
+      <input type="number" name="duration_weeks" class="form-control" min="1" placeholder="可不填">
+    </div>
+  </div>
+  <div class="mb-3"><label class="form-label fw-semibold">课程描述</label><textarea name="description" class="form-control" rows="3"></textarea></div>
+  <div class="d-flex gap-2">
+    <button type="submit" class="btn btn-primary">创建课程</button>
+    <a href="{{ url_for('courses_list') }}" class="btn btn-outline-secondary">取消</a>
+  </div>
+</form>
+</div></div></div>
+{% endblock %}

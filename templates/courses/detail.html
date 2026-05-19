@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}{{ course.name }}{% endblock %}
+{% block page_title %}课程详情{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h4>{{ course.name }}</h4>
+  <div class="d-flex gap-2">
+    <a href="{{ url_for('course_edit', course_id=course.id) }}" class="btn btn-outline-primary"><i class="bi bi-pencil me-1"></i>编辑</a>
+    <a href="{{ url_for('courses_list') }}" class="btn btn-outline-secondary">返回</a>
+  </div>
+</div>
+<div class="row g-3">
+  <div class="col-lg-4">
+    <div class="stat-card">
+      <h6 class="fw-semibold mb-3">课程信息</h6>
+      <table class="table table-sm table-borderless mb-0">
+        <tr><td class="text-muted small">课程名称</td><td class="fw-medium">{{ course.name }}</td></tr>
+        <tr><td class="text-muted small">功能中心</td><td><span class="badge center-{{ course.center.code|lower }}">Point {{ course.center.code }} · {{ course.center.name }}</span></td></tr>
+        <tr><td class="text-muted small">适庄年龄</td><td>{{ course.age_group or '—' }}</td></tr>
+        <tr><td class="text-muted small">月课时费</td><td class="fw-semibold text-success">{% if course.fee %}RM{{ "%.2f"|format(course.fee) }}{% else %}—{% endif %}</td></tr>
+        <tr><td class="text-muted small">周课次数</td><td>{{ course.sessions_per_week }}x/周</td></tr>
+        <tr><td class="text-muted small">课程周期</td><td>{% if course.duration_weeks %}{{ course.duration_weeks }} 周{% else %}长期{% endif %}</td></tr>
+        <tr><td class="text-muted small">在读学生</td><td class="fw-semibold">{{ enrollments|length }} 人</td></tr>
+      </table>
+      {% if course.description %}<hr><p class="text-muted small mb-0">{{ course.description }}</p>{% endif %}
+    </div>
+  </div>
+  <div class="col-lg-8">
+    <div class="table-card mb-3">
+      <div class="d-flex align-items-center justify-content-between p-3 border-bottom">
+        <h6 class="mb-0 fw-semibold">在读学生 ({{ enrollments|length }})</h6>
+        <a href="{{ url_for('enrollment_add') }}" class="btn btn-sm btn-primary">报名学生</a>
+      </div>
+      <table class="table table-hover mb-0">
+        <thead><tr><th>学生</th><th>年龄组</th><th>开始日期</th><th>状态</th></tr></thead>
+        <tbody>
+          {% for e in enrollments %}
+          <tr>
+            <td><a href="{{ url_for('student_detail', student_id=e.student_id) }}" class="text-decoration-none fw-medium">{{ e.student.name }}</a></td>
+            <td><span class="badge {% if e.student.age and e.student.age<=6 %}center-a{% else %}center-c{% endif %}">{{ e.student.age_group }}</span></td>
+            <td class="text-muted small">{{ e.start_date.strftime('%Y/%m/%d') }}</td>
+            <td><span class="badge badge-active">在读</span></td>
+          </tr>
+          {% else %}
+          <tr><td colspan="4" class="text-center text-muted py-3">暂无学生报名</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div class="table-card">
+      <div class="d-flex align-items-center justify-content-between p-3 border-bottom">
+        <h6 class="mb-0 fw-semibold">近期课程安排</h6>
+        <a href="{{ url_for('session_add') }}" class="btn btn-sm btn-outline-primary">新增课程</a>
+      </div>
+      <table class="table table-hover mb-0">
+        <thead><tr><th>日期</th><th>时间</th><th>主题</th><th>出勤</th></tr></thead>
+        <tbody>
+          {% for s in sessions %}
+          <tr>
+            <td>{{ s.date.strftime('%Y/%m/%d') }}</td>
+            <td class="text-muted small">{{ s.start_time or '—' }}</td>
+            <td>{{ s.topic or '—' }}</td>
+            <td>{{ s.present_count() }}/{{ s.total_count() }}</td>
+          </tr>
+          {% else %}
+          <tr><td colspan="4" class="text-center text-muted py-3">暂无课程安排</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

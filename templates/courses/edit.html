@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}编辑 {{ course.name }}{% endblock %}
+{% block page_title %}编辑课程{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h4>编辑课程</h4>
+  <a href="{{ url_for('course_detail', course_id=course.id) }}" class="btn btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i>返回</a>
+</div>
+<div class="row"><div class="col-lg-6">
+<div class="stat-card">
+<form method="post">
+  <div class="mb-3"><label class="form-label fw-semibold">课程名称 *</label><input type="text" name="name" class="form-control" value="{{ course.name }}" required></div>
+  <div class="mb-3">
+    <label class="form-label fw-semibold">功能中心 *</label>
+    <select name="center_id" class="form-select" required>
+      {% for c in centers %}
+      <option value="{{ c.id }}" {% if course.center_id==c.id %}selected{% endif %}>Point {{ c.code }}: {{ c.name }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="mb-3"><label class="form-label fw-semibold">适庄年龄</label><input type="text" name="age_group" class="form-control" value="{{ course.age_group or '' }}"></div>
+  <div class="row mb-3">
+    <div class="col"><label class="form-label fw-semibold">月课时费 (RM)</label><input type="number" name="fee" class="form-control" step="0.01" value="{{ course.fee or 0 }}"></div>
+    <div class="col"><label class="form-label fw-semibold">周课次数</label><input type="number" name="sessions_per_week" class="form-control" value="{{ course.sessions_per_week }}"></div>
+    <div class="col"><label class="form-label fw-semibold">周期(周)</label><input type="number" name="duration_weeks" class="form-control" value="{{ course.duration_weeks or '' }}"></div>
+  </div>
+  <div class="mb-3"><label class="form-label fw-semibold">课程描述</label><textarea name="description" class="form-control" rows="3">{{ course.description or '' }}</textarea></div>
+  <div class="d-flex gap-2">
+    <button type="submit" class="btn btn-primary">保存修改</button>
+    <a href="{{ url_for('course_detail', course_id=course.id) }}" class="btn btn-outline-secondary">取消</a>
+  </div>
+</form>
+</div></div></div>
+{% endblock %}

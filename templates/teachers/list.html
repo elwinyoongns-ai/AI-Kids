@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}教师管理{% endblock %}
+{% block page_title %}教师管理{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h4>教师管理</h4>
+  <a href="{{ url_for('teacher_add') }}" class="btn btn-primary"><i class="bi bi-person-plus me-1"></i>添加教师</a>
+</div>
+<div class="table-card">
+  <table class="table table-hover">
+    <thead><tr><th>姓名</th><th>电话</th><th>邮箱</th><th>专长领域</th><th>课程数</th><th>操作</th></tr></thead>
+    <tbody>
+      {% for t in teachers %}
+      <tr>
+        <td class="fw-medium">{{ t.name }}</td>
+        <td class="text-muted small">{{ t.phone or '—' }}</td>
+        <td class="text-muted small">{{ t.email or '—' }}</td>
+        <td class="text-muted small">{{ t.specialty or '—' }}</td>
+        <td>{{ t.sessions.count() }}</td>
+        <td>
+          <a href="{{ url_for('teacher_edit', teacher_id=t.id) }}" class="btn btn-sm btn-outline-secondary py-0">编辑</a>
+          <form method="post" action="{{ url_for('teacher_delete', teacher_id=t.id) }}" class="d-inline" onsubmit="return confirm('确认移除？')">
+            <button class="btn btn-sm btn-outline-danger py-0">移除</button>
+          </form>
+        </td>
+      </tr>
+      {% else %}
+      <tr><td colspan="6" class="text-center text-muted py-4">暂无教师数据</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

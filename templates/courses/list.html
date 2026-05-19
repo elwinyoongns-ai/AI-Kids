@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}课程管理{% endblock %}
+{% block page_title %}课程管理{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h4>课程管理</h4>
+  <a href="{{ url_for('course_add') }}" class="btn btn-primary"><i class="bi bi-plus me-1"></i>添加课程</a>
+</div>
+<div class="d-flex gap-2 mb-3 flex-wrap">
+  {% for c in centers %}
+  <a href="{{ url_for('courses_list') }}?center={{ c.code }}" class="btn btn-sm {% if center_filter==c.code %}btn-primary{% else %}btn-outline-secondary{% endif %}">
+    Point {{ c.code }}: {{ c.name }}
+  </a>
+  {% endfor %}
+  {% if center_filter %}<a href="{{ url_for('courses_list') }}" class="btn btn-sm btn-link">显示全部</a>{% endif %}
+</div>
+<div class="table-card">
+  <table class="table table-hover">
+    <thead><tr><th>课程名称</th><th>中心</th><th>适庄年龄</th><th>课时费</th><th>周课次数</th><th>在读学生</th><th>操作</th></tr></thead>
+    <tbody>
+      {% for course in courses %}
+      <tr>
+        <td><a href="{{ url_for('course_detail', course_id=course.id) }}" class="text-decoration-none fw-medium">{{ course.name }}</a></td>
+        <td><span class="badge center-{{ course.center.code|lower }}">Point {{ course.center.code }}</span></td>
+        <td class="text-muted small">{{ course.age_group or '—' }}</td>
+        <td class="fw-medium">{% if course.fee %}RM{{ "%.0f"|format(course.fee) }}{% else %}—{% endif %}</td>
+        <td class="text-muted small">{{ course.sessions_per_week }}x/周</td>
+        <td>{{ course.enrollments.filter_by(status='active').count() }}</td>
+        <td>
+          <a href="{{ url_for('course_edit', course_id=course.id) }}" class="btn btn-sm btn-outline-secondary py-0">编辑</a>
+        </td>
+      </tr>
+      {% else %}
+      <tr><td colspan="7" class="text-center text-muted py-4">暂无课程</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
