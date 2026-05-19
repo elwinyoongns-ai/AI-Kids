@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}新建课程{% endblock %}
+{% block page_title %}新建课程{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h4>新建课程</h4>
+  <a href="{{ url_for('sessions_list') }}" class="btn btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i>返回</a>
+</div>
+<div class="row"><div class="col-lg-6">
+<div class="stat-card">
+<form method="post">
+  <div class="mb-3">
+    <label class="form-label fw-semibold">课程 *</label>
+    <select name="course_id" class="form-select" required>
+      <option value="">选择课程...</option>
+      {% for c in courses %}
+      <option value="{{ c.id }}">Point {{ c.center.code }} · {{ c.name }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="mb-3">
+    <label class="form-label fw-semibold">教师</label>
+    <select name="teacher_id" class="form-select">
+      <option value="">选择教师...</option>
+      {% for t in teachers %}
+      <option value="{{ t.id }}">{{ t.name }}{% if t.specialty %} · {{ t.specialty }}{% endif %}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="mb-3">
+    <label class="form-label fw-semibold">课程日期 *</label>
+    <input type="date" name="date" class="form-control" value="{{ today }}" required>
+  </div>
+  <div class="row mb-3">
+    <div class="col"><label class="form-label fw-semibold">开始时间</label><input type="time" name="start_time" class="form-control"></div>
+    <div class="col"><label class="form-label fw-semibold">结束时间</label><input type="time" name="end_time" class="form-control"></div>
+  </div>
+  <div class="mb-3"><label class="form-label fw-semibold">课程主题</label><input type="text" name="topic" class="form-control" placeholder="如：小小科学家第3课"></div>
+  <div class="mb-3"><label class="form-label fw-semibold">备注</label><textarea name="notes" class="form-control" rows="2"></textarea></div>
+  <div class="d-flex gap-2">
+    <button type="submit" class="btn btn-primary">创建课程</button>
+    <a href="{{ url_for('sessions_list') }}" class="btn btn-outline-secondary">取消</a>
+  </div>
+</form>
+</div></div></div>
+{% endblock %}

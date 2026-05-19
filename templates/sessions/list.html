@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}课程安排{% endblock %}
+{% block page_title %}课程安排{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h4>课程安排</h4>
+  <a href="{{ url_for('session_add') }}" class="btn btn-primary"><i class="bi bi-calendar-plus me-1"></i>新建课程</a>
+</div>
+<form class="d-flex gap-2 mb-3 flex-wrap" method="get">
+  <select name="course" class="form-select form-select-sm" style="width:220px">
+    <option value="">所有课程</option>
+    {% for c in courses %}
+    <option value="{{ c.id }}" {% if course_filter and course_filter==c.id|string %}selected{% endif %}>{{ c.name }}</option>
+    {% endfor %}
+  </select>
+  <button class="btn btn-sm btn-outline-secondary">筛选</button>
+  {% if course_filter %}<a href="{{ url_for('sessions_list') }}" class="btn btn-sm btn-link">清除</a>{% endif %}
+</form>
+<div class="table-card">
+  <table class="table table-hover">
+    <thead><tr><th>日期</th><th>课程</th><th>中心</th><th>教师</th><th>时间</th><th>主题</th><th>出勤</th><th>操作</th></tr></thead>
+    <tbody>
+      {% for s in class_sessions %}
+      <tr>
+        <td class="fw-medium">{{ s.date.strftime('%Y/%m/%d') }}</td>
+        <td><a href="{{ url_for('course_detail', course_id=s.course_id) }}" class="text-decoration-none">{{ s.course.name }}</a></td>
+        <td><span class="badge center-{{ s.course.center.code|lower }}">{{ s.course.center.code }}</span></td>
+        <td class="text-muted small">{{ s.teacher.name if s.teacher else '—' }}</td>
+        <td class="text-muted small">{{ s.start_time or '—' }}{% if s.end_time %} - {{ s.end_time }}{% endif %}</td>
+        <td class="text-muted small">{{ s.topic or '—' }}</td>
+        <td>
+          {% if s.total_count() > 0 %}
+          <span class="fw-medium">{{ s.present_count() }}</span><span class="text-muted">/{{ s.total_count() }}</span>
+          {% else %}<span class="text-muted">—</span>{% endif %}
+        </td>
+        <td>
+          <a href="{{ url_for('session_attendance', session_id=s.id) }}" class="btn btn-sm btn-outline-primary py-0">出勤</a>
+          <form method="post" action="{{ url_for('session_delete', session_id=s.id) }}" class="d-inline" onsubmit="return confirm('确认删除？')">
+            <button class="btn btn-sm btn-outline-danger py-0">删除</button>
+          </form>
+        </td>
+      </tr>
+      {% else %}
+      <tr><td colspan="8" class="text-center text-muted py-4">暂无课程记录</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block title %}出勤记录{% endblock %}
+{% block page_title %}出勤记录{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h4>出勤记录</h4>
+  <a href="{{ url_for('sessions_list') }}" class="btn btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i>返回</a>
+</div>
+<div class="row g-3 mb-4">
+  <div class="col-sm-6 col-lg-3">
+    <div class="stat-card">
+      <div class="stat-label">课程</div>
+      <div class="fw-semibold">{{ cs.course.name }}</div>
+      <span class="badge center-{{ cs.course.center.code|lower }} mt-1">Point {{ cs.course.center.code }}</span>
+    </div>
+  </div>
+  <div class="col-sm-6 col-lg-3">
+    <div class="stat-card">
+      <div class="stat-label">日期与时间</div>
+      <div class="fw-semibold">{{ cs.date.strftime('%Y年%m月%d日') }}</div>
+      <div class="text-muted small">{{ cs.start_time or '' }}{% if cs.end_time %} - {{ cs.end_time }}{% endif %}</div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-lg-3">
+    <div class="stat-card">
+      <div class="stat-label">教师</div>
+      <div class="fw-semibold">{{ cs.teacher.name if cs.teacher else '未分配' }}</div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-lg-3">
+    <div class="stat-card">
+      <div class="stat-label">主题</div>
+      <div class="fw-semibold">{{ cs.topic or '无主题' }}</div>
+    </div>
+  </div>
+</div>
+
+<div class="table-card">
+  <div class="d-flex align-items-center justify-content-between p-3 border-bottom">
+    <h6 class="mb-0 fw-semibold">学生出勤 ({{ records|length }} 人)</h6>
+    <div class="d-flex gap-2">
+      <button type="button" class="btn btn-sm btn-outline-success" id="checkAll">全勤</button>
+      <button type="button" class="btn btn-sm btn-outline-secondary" id="uncheckAll">全缺</button>
+    </div>
+  </div>
+  <form method="post">
+    <table class="table table-hover mb-0">
+      <thead><tr><th style="width:50px">出勤</th><th>学生姓名</th><th>年龄组</th><th>家长</th><th>备注</th></tr></thead>
+      <tbody>
+        {% for r in records %}
+        <tr class="{% if r.present %}table-success{% endif %}" id="row-{{ r.student_id }}">
+          <td>
+            <div class="form-check">
+              <input class="form-check-input attendance-check" type="checkbox" name="present" value="{{ r.student_id }}" {% if r.present %}checked{% endif %} onchange="this.closest('tr').className=this.checked?'table-success':''">
+            </div>
+          </td>
+          <td class="fw-medium">{{ r.student.name }}</td>
+          <td><span class="badge {% if r.student.age and r.student.age<=6 %}center-a{% else %}center-c{% endif %}">{{ r.student.age_group }}</span></td>
+          <td class="text-muted small">{{ r.student.parent.name if r.student.parent else '—' }}</td>
+          <td class="text-muted small">{{ r.notes or '' }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="5" class="text-center text-muted py-4">暂无学生报名此课程</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% if records %}
+    <div class="p-3 border-top d-flex gap-2">
+      <button type="submit" class="btn btn-primary"><i class="bi bi-check2 me-1"></i>保存出勤</button>
+      <a href="{{ url_for('sessions_list') }}" class="btn btn-outline-secondary">取消</a>
+    </div>
+    {% endif %}
+  </form>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+  document.getElementById('checkAll').addEventListener('click',()=>{
+    document.querySelectorAll('.attendance-check').forEach(c=>{c.checked=true;c.closest('tr').className='table-success';});
+  });
+  document.getElementById('uncheckAll').addEventListener('click',()=>{
+    document.querySelectorAll('.attendance-check').forEach(c=>{c.checked=false;c.closest('tr').className='';});
+  });
+</script>
+{% endblock %}

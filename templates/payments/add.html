@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}记录收费{% endblock %}
+{% block page_title %}记录收费{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h4>记录收费</h4>
+  <a href="{{ url_for('payments_list') }}" class="btn btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i>返回</a>
+</div>
+<div class="row"><div class="col-lg-6">
+<div class="stat-card">
+<form method="post">
+  <div class="mb-3">
+    <label class="form-label fw-semibold">报名记录 *</label>
+    <select name="enrollment_id" class="form-select" required>
+      <option value="">选择学生/课程...</option>
+      {% for e in enrollments %}
+      <option value="{{ e.id }}">{{ e.student.name }} — {{ e.course.name }}{% if e.course.fee %} (RM{{ "%.0f"|format(e.course.fee) }}/月){% endif %}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="row mb-3">
+    <div class="col">
+      <label class="form-label fw-semibold">金额 (RM) *</label>
+      <input type="number" name="amount" class="form-control" step="0.01" min="0" required>
+    </div>
+    <div class="col">
+      <label class="form-label fw-semibold">付款月份</label>
+      <input type="month" name="month" class="form-control" value="{{ this_month }}">
+    </div>
+  </div>
+  <div class="row mb-3">
+    <div class="col">
+      <label class="form-label fw-semibold">付款方式</label>
+      <select name="method" class="form-select">
+        <option value="现金">现金</option>
+        <option value="转账">转账</option>
+        <option value="微信">微信</option>
+        <option value="支付宝">支付宝</option>
+        <option value="网上银行">网上银行</option>
+      </select>
+    </div>
+    <div class="col">
+      <label class="form-label fw-semibold">付款日期</label>
+      <input type="date" name="paid_date" class="form-control" value="{{ today }}">
+    </div>
+    <div class="col">
+      <label class="form-label fw-semibold">状态</label>
+      <select name="status" class="form-select">
+        <option value="paid">已付款</option>
+        <option value="pending">待付款</option>
+        <option value="overdue">逾期</option>
+      </select>
+    </div>
+  </div>
+  <div class="mb-3"><label class="form-label fw-semibold">备注</label><textarea name="notes" class="form-control" rows="2"></textarea></div>
+  <div class="d-flex gap-2">
+    <button type="submit" class="btn btn-primary">保存收费</button>
+    <a href="{{ url_for('payments_list') }}" class="btn btn-outline-secondary">取消</a>
+  </div>
+</form>
+</div></div></div>
+{% endblock %}

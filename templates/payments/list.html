@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}费用管理{% endblock %}
+{% block page_title %}费用管理{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h4>费用管理</h4>
+  <a href="{{ url_for('payment_add') }}" class="btn btn-primary"><i class="bi bi-cash me-1"></i>记录收费</a>
+</div>
+<form class="d-flex gap-2 mb-3 flex-wrap" method="get">
+  <input type="month" name="month" value="{{ month_filter }}" class="form-control form-control-sm" style="width:160px">
+  <select name="status" class="form-select form-select-sm" style="width:120px">
+    <option value="">全部状态</option>
+    <option value="paid" {% if status_filter=='paid' %}selected{% endif %}>已付款</option>
+    <option value="pending" {% if status_filter=='pending' %}selected{% endif %}>待付款</option>
+    <option value="overdue" {% if status_filter=='overdue' %}selected{% endif %}>逾期</option>
+  </select>
+  <button class="btn btn-sm btn-outline-secondary">筛选</button>
+</form>
+
+{% if payments %}
+<div class="stat-card mb-3 d-flex align-items-center gap-4">
+  <div><div class="stat-label">当前筛选已收款</div><div class="stat-value text-success">RM{{ "%.2f"|format(total) }}</div></div>
+  <div><div class="stat-label">条数</div><div class="fw-semibold fs-5">{{ payments|length }}</div></div>
+</div>
+{% endif %}
+
+<div class="table-card">
+  <table class="table table-hover">
+    <thead><tr><th>学生</th><th>课程</th><th>月份</th><th>金额</th><th>付款方式</th><th>付款日期</th><th>状态</th><th>备注</th></tr></thead>
+    <tbody>
+      {% for p in payments %}
+      <tr>
+        <td class="fw-medium">{{ p.enrollment.student.name }}</td>
+        <td class="text-muted small">{{ p.enrollment.course.name }}</td>
+        <td class="text-muted small">{{ p.month or '—' }}</td>
+        <td class="fw-semibold">RM{{ "%.2f"|format(p.amount) }}</td>
+        <td class="text-muted small">{{ p.method or '—' }}</td>
+        <td class="text-muted small">{{ p.paid_date.strftime('%Y/%m/%d') if p.paid_date else '—' }}</td>
+        <td>
+          {% if p.status=='paid' %}<span class="badge badge-active">已付款</span>
+          {% elif p.status=='pending' %}<span class="badge badge-pending">待付款</span>
+          {% else %}<span class="badge badge-inactive">逾期</span>{% endif %}
+        </td>
+        <td class="text-muted small">{{ p.notes or '' }}</td>
+      </tr>
+      {% else %}
+      <tr><td colspan="8" class="text-center text-muted py-4">暂无付款记录</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

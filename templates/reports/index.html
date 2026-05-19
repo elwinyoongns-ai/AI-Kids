@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block title %}数据报告{% endblock %}
+{% block page_title %}数据报告{% endblock %}
+{% block extra_css %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+{% endblock %}
+{% block content %}
+<div class="row g-3 mb-4">
+  <div class="col-sm-6 col-lg-3">
+    <div class="stat-card">
+      <div class="stat-label">总收入</div>
+      <div class="stat-value text-success">RM{{ "%.0f"|format(total_revenue) }}</div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-lg-3">
+    <div class="stat-card">
+      <div class="stat-label">待收款</div>
+      <div class="stat-value text-warning">{{ pending_count }} 笔</div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-lg-3">
+    <div class="stat-card">
+      <div class="stat-label">年龄组分布</div>
+      {% for ag, cnt in age_groups.items() %}
+      <div class="d-flex justify-content-between" style="font-size:.82rem">
+        <span class="text-muted">{{ ag }}</span><span class="fw-semibold">{{ cnt }}</span>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  <div class="col-sm-6 col-lg-3">
+    <div class="stat-card">
+      <div class="stat-label">中心在读分布</div>
+      {% for name, code, cnt in center_enrollments %}
+      <div class="d-flex justify-content-between align-items-center mb-1" style="font-size:.82rem">
+        <span><span class="badge center-{{ code|lower }} me-1">{{ code }}</span>{{ name }}</span>
+        <span class="fw-semibold">{{ cnt }}</span>
+      </div>
+      {% else %}
+      <div class="text-muted small">暂无数据</div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-lg-8">
+    <div class="stat-card">
+      <h6 class="fw-semibold mb-3">近六个月收入趋势 (RM)</h6>
+      <canvas id="revenueChart" height="120"></canvas>
+    </div>
+  </div>
+  <div class="col-lg-4">
+    <div class="stat-card">
+      <h6 class="fw-semibold mb-3">热门课程 Top 5</h6>
+      <table class="table table-sm table-borderless mb-0">
+        <tbody>
+          {% for name, cnt in top_courses %}
+          <tr>
+            <td style="font-size:.84rem">{{ loop.index }}. {{ name }}</td>
+            <td class="text-end fw-semibold">{{ cnt }} 人</td>
+          </tr>
+          {% else %}
+          <tr><td class="text-muted small">暂无数据</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+  const labels = {{ revenue_data | map(attribute='month') | list | tojson }};
+  const amounts = {{ revenue_data | map(attribute='amount') | list | tojson }};
+  new Chart(document.getElementById('revenueChart'), {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [{ label: '收入 (RM)', data: amounts, backgroundColor: 'rgba(99,102,241,.7)', borderRadius: 6 }]
+    },
+    options: {
+      plugins: { legend: { display: false } },
+      scales: { y: { beginAtZero: true, ticks: { callback: v => 'RM'+v } } }
+    }
+  });
+</script>
+{% endblock %}
