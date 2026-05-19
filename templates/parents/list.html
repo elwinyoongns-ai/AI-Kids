@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}家长管理{% endblock %}
+{% block page_title %}家长管理{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h4>家长管理</h4>
+  <a href="{{ url_for('parent_add') }}" class="btn btn-primary"><i class="bi bi-person-plus me-1"></i>添加家长</a>
+</div>
+<form class="d-flex gap-2 mb-3" method="get">
+  <input type="text" name="q" value="{{ q }}" placeholder="搜索姓名或电话..." class="form-control form-control-sm" style="width:220px">
+  <button class="btn btn-sm btn-outline-secondary">搜索</button>
+  {% if q %}<a href="{{ url_for('parents_list') }}" class="btn btn-sm btn-link">清除</a>{% endif %}
+</form>
+<div class="table-card">
+  <table class="table table-hover">
+    <thead><tr><th>姓名</th><th>电话</th><th>邮箱</th><th>微信</th><th>孩子数</th><th>操作</th></tr></thead>
+    <tbody>
+      {% for p in parents %}
+      <tr>
+        <td><a href="{{ url_for('parent_detail', parent_id=p.id) }}" class="text-decoration-none fw-medium">{{ p.name }}</a></td>
+        <td>{{ p.phone }}</td>
+        <td class="text-muted small">{{ p.email or '—' }}</td>
+        <td class="text-muted small">{{ p.wechat or '—' }}</td>
+        <td>{{ p.students.filter_by(is_active=True).count() }}</td>
+        <td>
+          <a href="{{ url_for('parent_edit', parent_id=p.id) }}" class="btn btn-sm btn-outline-secondary py-0">编辑</a>
+          <form method="post" action="{{ url_for('parent_delete', parent_id=p.id) }}" class="d-inline" onsubmit="return confirm('确认移除？')">
+            <button class="btn btn-sm btn-outline-danger py-0">移除</button>
+          </form>
+        </td>
+      </tr>
+      {% else %}
+      <tr><td colspan="6" class="text-center text-muted py-4">暂无家长数据</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

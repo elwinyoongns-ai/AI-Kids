@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}编辑 {{ parent.name }}{% endblock %}
+{% block page_title %}编辑家长{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h4>编辑家长</h4>
+  <a href="{{ url_for('parent_detail', parent_id=parent.id) }}" class="btn btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i>返回</a>
+</div>
+<div class="row"><div class="col-lg-6">
+<div class="stat-card">
+<form method="post">
+  <div class="mb-3"><label class="form-label fw-semibold">姓名 *</label><input type="text" name="name" class="form-control" value="{{ parent.name }}" required></div>
+  <div class="mb-3"><label class="form-label fw-semibold">电话 *</label><input type="tel" name="phone" class="form-control" value="{{ parent.phone }}" required></div>
+  <div class="mb-3"><label class="form-label fw-semibold">邮箱</label><input type="email" name="email" class="form-control" value="{{ parent.email or '' }}"></div>
+  <div class="mb-3"><label class="form-label fw-semibold">微信号</label><input type="text" name="wechat" class="form-control" value="{{ parent.wechat or '' }}"></div>
+  <div class="mb-3"><label class="form-label fw-semibold">地址</label><input type="text" name="address" class="form-control" value="{{ parent.address or '' }}"></div>
+  <div class="mb-3"><label class="form-label fw-semibold">备注</label><textarea name="notes" class="form-control" rows="2">{{ parent.notes or '' }}</textarea></div>
+  <div class="d-flex gap-2">
+    <button type="submit" class="btn btn-primary">保存修改</button>
+    <a href="{{ url_for('parent_detail', parent_id=parent.id) }}" class="btn btn-outline-secondary">取消</a>
+  </div>
+</form>
+</div></div></div>
+{% endblock %}

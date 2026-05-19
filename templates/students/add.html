@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}添加学生{% endblock %}
+{% block page_title %}添加学生{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h4>添加学生</h4>
+  <a href="{{ url_for('students_list') }}" class="btn btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i>返回</a>
+</div>
+<div class="row"><div class="col-lg-6">
+<div class="stat-card">
+<form method="post">
+  <div class="mb-3">
+    <label class="form-label fw-semibold">学生姓名 *</label>
+    <input type="text" name="name" class="form-control" required autofocus>
+  </div>
+  <div class="row mb-3">
+    <div class="col">
+      <label class="form-label fw-semibold">性别</label>
+      <select name="gender" class="form-select">
+        <option value="">不填</option>
+        <option value="男">男</option>
+        <option value="女">女</option>
+      </select>
+    </div>
+    <div class="col">
+      <label class="form-label fw-semibold">出生日期</label>
+      <input type="date" name="dob" class="form-control">
+    </div>
+  </div>
+  <div class="mb-3">
+    <label class="form-label fw-semibold">家长</label>
+    <select name="parent_id" class="form-select">
+      <option value="">选择家长...</option>
+      {% for p in parents %}
+      <option value="{{ p.id }}">{{ p.name }} ({{ p.phone }})</option>
+      {% endfor %}
+    </select>
+    <div class="form-text">如家长未登记，请先<a href="{{ url_for('parent_add') }}">添加家长</a></div>
+  </div>
+  <div class="row mb-3">
+    <div class="col">
+      <label class="form-label fw-semibold">学校</label>
+      <input type="text" name="school" class="form-control">
+    </div>
+    <div class="col">
+      <label class="form-label fw-semibold">年级</label>
+      <input type="text" name="grade" class="form-control" placeholder="如：小学一年级">
+    </div>
+  </div>
+  <div class="mb-3">
+    <label class="form-label fw-semibold">备注</label>
+    <textarea name="notes" class="form-control" rows="2"></textarea>
+  </div>
+  <div class="d-flex gap-2">
+    <button type="submit" class="btn btn-primary">保存学生</button>
+    <a href="{{ url_for('students_list') }}" class="btn btn-outline-secondary">取消</a>
+  </div>
+</form>
+</div></div></div>
+{% endblock %}

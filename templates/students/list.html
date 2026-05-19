@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}学生管理{% endblock %}
+{% block page_title %}学生管理{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h4>学生管理</h4>
+  <a href="{{ url_for('student_add') }}" class="btn btn-primary"><i class="bi bi-person-plus me-1"></i>添加学生</a>
+</div>
+<form class="d-flex gap-2 mb-3 flex-wrap" method="get">
+  <input type="text" name="q" value="{{ q }}" placeholder="搜索学生姓名..." class="form-control form-control-sm" style="width:200px">
+  <select name="age" class="form-select form-select-sm" style="width:160px">
+    <option value="">所有年龄组</option>
+    <option value="young" {% if age_filter=='young' %}selected{% endif %}>幼儿 (2-6岁)</option>
+    <option value="primary" {% if age_filter=='primary' %}selected{% endif %}>小学生 (7-12岁)</option>
+  </select>
+  <button class="btn btn-sm btn-outline-secondary">筛选</button>
+  {% if q or age_filter %}<a href="{{ url_for('students_list') }}" class="btn btn-sm btn-link">清除</a>{% endif %}
+</form>
+<div class="table-card">
+  <table class="table table-hover">
+    <thead><tr><th>姓名</th><th>年龄</th><th>年龄组</th><th>学校/年级</th><th>家长</th><th>在读课程</th><th>操作</th></tr></thead>
+    <tbody>
+      {% for s in students %}
+      <tr>
+        <td>
+          <a href="{{ url_for('student_detail', student_id=s.id) }}" class="text-decoration-none fw-medium">{{ s.name }}</a>
+          {% if s.gender %}<span class="text-muted ms-1" style="font-size:.78rem">{{ s.gender }}</span>{% endif %}
+        </td>
+        <td>{{ s.age or '—' }}</td>
+        <td><span class="badge {% if s.age and s.age<=6 %}center-a{% elif s.age and s.age<=12 %}center-c{% else %}bg-secondary{% endif %}">{{ s.age_group }}</span></td>
+        <td class="text-muted" style="font-size:.82rem">{{ s.school or '—' }}{% if s.grade %} · {{ s.grade }}{% endif %}</td>
+        <td>{% if s.parent %}<a href="{{ url_for('parent_detail', parent_id=s.parent.id) }}" class="text-decoration-none">{{ s.parent.name }}</a>{% else %}—{% endif %}</td>
+        <td>{{ s.enrollments.filter_by(status='active').count() }}</td>
+        <td>
+          <a href="{{ url_for('student_edit', student_id=s.id) }}" class="btn btn-sm btn-outline-secondary py-0">编辑</a>
+          <form method="post" action="{{ url_for('student_delete', student_id=s.id) }}" class="d-inline" onsubmit="return confirm('确认移除？')">
+            <button class="btn btn-sm btn-outline-danger py-0">移除</button>
+          </form>
+        </td>
+      </tr>
+      {% else %}
+      <tr><td colspan="7" class="text-center text-muted py-4">暂无学生数据</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

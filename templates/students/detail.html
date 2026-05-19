@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}{{ student.name }}{% endblock %}
+{% block page_title %}学生详情{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h4>{{ student.name }}</h4>
+  <div class="d-flex gap-2">
+    <a href="{{ url_for('student_edit', student_id=student.id) }}" class="btn btn-outline-primary"><i class="bi bi-pencil me-1"></i>编辑</a>
+    <a href="{{ url_for('students_list') }}" class="btn btn-outline-secondary">返回</a>
+  </div>
+</div>
+<div class="row g-3">
+  <div class="col-lg-4">
+    <div class="stat-card">
+      <h6 class="fw-semibold mb-3">基本信息</h6>
+      <table class="table table-sm table-borderless mb-0">
+        <tr><td class="text-muted small">姓名</td><td class="fw-medium">{{ student.name }}</td></tr>
+        <tr><td class="text-muted small">性别</td><td>{{ student.gender or '—' }}</td></tr>
+        <tr><td class="text-muted small">年龄</td><td>{{ student.age or '—' }} 岁</td></tr>
+        <tr><td class="text-muted small">年龄组</td><td><span class="badge {% if student.age and student.age<=6 %}center-a{% else %}center-c{% endif %}">{{ student.age_group }}</span></td></tr>
+        <tr><td class="text-muted small">出生日期</td><td>{{ student.dob.strftime('%Y/%m/%d') if student.dob else '—' }}</td></tr>
+        <tr><td class="text-muted small">学校</td><td>{{ student.school or '—' }}</td></tr>
+        <tr><td class="text-muted small">年级</td><td>{{ student.grade or '—' }}</td></tr>
+        {% if student.notes %}<tr><td class="text-muted small">备注</td><td>{{ student.notes }}</td></tr>{% endif %}
+      </table>
+      {% if student.parent %}
+      <hr>
+      <h6 class="fw-semibold mb-2">家长信息</h6>
+      <div class="fw-medium">{{ student.parent.name }}</div>
+      <div class="text-muted small">{{ student.parent.phone }}</div>
+      {% if student.parent.email %}<div class="text-muted small">{{ student.parent.email }}</div>{% endif %}
+      {% if student.parent.wechat %}<div class="text-muted small">微信：{{ student.parent.wechat }}</div>{% endif %}
+      {% endif %}
+    </div>
+  </div>
+  <div class="col-lg-8">
+    <div class="table-card">
+      <div class="d-flex align-items-center justify-content-between p-3 border-bottom">
+        <h6 class="mb-0 fw-semibold">报名课程</h6>
+        <a href="{{ url_for('enrollment_add') }}" class="btn btn-sm btn-primary">报名新课程</a>
+      </div>
+      <table class="table table-hover mb-0">
+        <thead><tr><th>课程</th><th>中心</th><th>开始日期</th><th>状态</th><th>操作</th></tr></thead>
+        <tbody>
+          {% for e in enrollments %}
+          <tr>
+            <td class="fw-medium">{{ e.course.name }}</td>
+            <td><span class="badge center-{{ e.course.center.code|lower }}">Point {{ e.course.center.code }}</span></td>
+            <td class="text-muted small">{{ e.start_date.strftime('%Y/%m/%d') }}</td>
+            <td>{% if e.status=='active' %}<span class="badge badge-active">在读</span>
+            {% elif e.status=='completed' %}<span class="badge" style="background:#e0e7ff;color:#3730a3">已完成</span>
+            {% else %}<span class="badge badge-inactive">已退课</span>{% endif %}</td>
+            <td>
+              <form method="post" action="{{ url_for('enrollment_status', enrollment_id=e.id) }}" class="d-inline">
+                <select name="status" class="form-select form-select-sm d-inline-block" style="width:auto" onchange="this.form.submit()">
+                  <option value="active" {% if e.status=='active' %}selected{% endif %}>在读</option>
+                  <option value="completed" {% if e.status=='completed' %}selected{% endif %}>已完成</option>
+                  <option value="withdrawn" {% if e.status=='withdrawn' %}selected{% endif %}>退课</option>
+                </select>
+              </form>
+            </td>
+          </tr>
+          {% else %}
+          <tr><td colspan="5" class="text-center text-muted py-3">暂无报名记录</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

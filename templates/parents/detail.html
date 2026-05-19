@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}{{ parent.name }}{% endblock %}
+{% block page_title %}家长详情{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h4>{{ parent.name }}</h4>
+  <div class="d-flex gap-2">
+    <a href="{{ url_for('parent_edit', parent_id=parent.id) }}" class="btn btn-outline-primary"><i class="bi bi-pencil me-1"></i>编辑</a>
+    <a href="{{ url_for('parents_list') }}" class="btn btn-outline-secondary">返回</a>
+  </div>
+</div>
+<div class="row g-3">
+  <div class="col-lg-4">
+    <div class="stat-card">
+      <h6 class="fw-semibold mb-3">家长信息</h6>
+      <table class="table table-sm table-borderless mb-0">
+        <tr><td class="text-muted small">姓名</td><td class="fw-medium">{{ parent.name }}</td></tr>
+        <tr><td class="text-muted small">电话</td><td>{{ parent.phone }}</td></tr>
+        <tr><td class="text-muted small">邮箱</td><td>{{ parent.email or '—' }}</td></tr>
+        <tr><td class="text-muted small">微信</td><td>{{ parent.wechat or '—' }}</td></tr>
+        <tr><td class="text-muted small">地址</td><td>{{ parent.address or '—' }}</td></tr>
+        {% if parent.notes %}<tr><td class="text-muted small">备注</td><td>{{ parent.notes }}</td></tr>{% endif %}
+      </table>
+    </div>
+  </div>
+  <div class="col-lg-8">
+    <div class="table-card">
+      <div class="d-flex align-items-center justify-content-between p-3 border-bottom">
+        <h6 class="mb-0 fw-semibold">孩子列表</h6>
+        <a href="{{ url_for('student_add') }}" class="btn btn-sm btn-primary">添加学生</a>
+      </div>
+      <table class="table table-hover mb-0">
+        <thead><tr><th>姓名</th><th>年龄</th><th>年龄组</th><th>学校</th><th>报名课程</th><th></th></tr></thead>
+        <tbody>
+          {% for s in parent.students.filter_by(is_active=True).all() %}
+          <tr>
+            <td><a href="{{ url_for('student_detail', student_id=s.id) }}" class="text-decoration-none fw-medium">{{ s.name }}</a></td>
+            <td>{{ s.age or '—' }}</td>
+            <td><span class="badge {% if s.age and s.age<=6 %}center-a{% else %}center-c{% endif %}">{{ s.age_group }}</span></td>
+            <td class="text-muted small">{{ s.school or '—' }}</td>
+            <td>{{ s.enrollments.filter_by(status='active').count() }}</td>
+            <td><a href="{{ url_for('student_detail', student_id=s.id) }}" class="btn btn-sm btn-outline-secondary py-0">详情</a></td>
+          </tr>
+          {% else %}
+          <tr><td colspan="6" class="text-center text-muted py-3">暂无孩子记录</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}
